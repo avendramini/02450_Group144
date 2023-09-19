@@ -17,7 +17,7 @@ df = pd.read_csv(filename)
 # Pandas returns a dataframe, (df) which could be used for handling the data.
 # We will however convert the dataframe to numpy arrays for this course as 
 # is also described in the table in the exercise
-classLabels = df.columns[1:-1]
+attributeNames = df.columns[1:-1]
 
 # Extract vector y, convert to NumPy array
 raw_data = df.values  
@@ -46,6 +46,7 @@ rho=(S*S)/(S*S).sum()
 threshold=0.80
 
 plt.figure()
+
 plt.plot(range(1,len(rho)+1),rho,'x-')
 plt.plot(range(1,len(rho)+1),np.cumsum(rho),'o-')
 plt.plot([1,len(rho)],[threshold, threshold],'k--')
@@ -67,8 +68,8 @@ j = 1
 z = 2
 
 # Plot PCA of the data
-f = plt.figure()
-ax=plt.axes(projection='3d')
+f = plt.figure(figsize=(8,8))
+ax = f.add_subplot(111, projection='3d')
 plt.title('Heart Disease Data: PCA')
 #Z = array(Z)
 for c in range(2):
@@ -82,6 +83,25 @@ ax.set_zlabel('PC{0}'.format(z+1))
 
 
 # Output result to screen
+plt.show()
+
+
+
+N,M = standard.shape
+pcs = [0,1,2]
+legendStrs = ['PC'+str(e+1) for e in pcs]
+c = ['r','g','b']
+bw = .2
+r = np.arange(1,M+1)
+plt.figure(figsize=(10,5))
+for i in pcs:    
+    plt.bar(r+i*bw, V[:,i], width=bw)
+plt.xticks(r+bw, attributeNames)
+plt.xlabel('Attributes')
+plt.ylabel('Component coefficients')
+plt.legend(legendStrs)
+plt.grid()
+plt.title('Heart diseases: PCA Component Coefficients')
 plt.show()
 
     
