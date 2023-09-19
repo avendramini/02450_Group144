@@ -24,14 +24,14 @@ for i in range(0,raw_data.shape[0]):
 
 standard=raw_data.copy();
 
-var= np.zeros(10)
+std= np.zeros(10)
 for i in range(0,10):
     #print("max: "+str(raw_data[:,i].max()) + " min: "+ str(raw_data[:,i].min()))
     #plt.figure()
     #plt.hist(raw_data[:,i]);
     #plt.show()
-    var[i]=np.std(raw_data[:,i],ddof=1)
-    standard[:,i]=(raw_data[:,i]-np.average(raw_data[:,i]))/var[i]
+    std[i]=np.std(raw_data[:,i],ddof=1)
+    standard[:,i]=(raw_data[:,i]-np.average(raw_data[:,i]))/std[i]
     
 
 U,S,Vh= svd(standard.astype(np.float64),full_matrices=False)
