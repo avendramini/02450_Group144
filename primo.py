@@ -17,6 +17,9 @@ df = pd.read_csv(filename)
 # Pandas returns a dataframe, (df) which could be used for handling the data.
 # We will however convert the dataframe to numpy arrays for this course as 
 # is also described in the table in the exercise
+classLabels = df.columns[1:-1]
+
+# Extract vector y, convert to NumPy array
 raw_data = df.values  
 raw_data=raw_data[:,range(1,11)]
 for i in range(0,raw_data.shape[0]):
@@ -53,6 +56,33 @@ plt.legend(['Individual','Cumulative','Threshold'])
 plt.grid()
 plt.show()
 
+  
+
+# Project the centered data onto principal component space
+Z = standard @ V
+
+# Indices of the principal components to be plotted
+i = 0
+j = 1
+z = 2
+
+# Plot PCA of the data
+f = plt.figure()
+ax=plt.axes(projection='3d')
+plt.title('Heart Disease Data: PCA')
+#Z = array(Z)
+for c in range(2):
+    # select indices belonging to class c:
+    class_mask = raw_data[:,-1]==c
+    ax.plot3D(Z[class_mask,i], Z[class_mask,j], Z[class_mask,z],'.')
+plt.legend(["Chd=0","Chd=1"])
+ax.set_xlabel('PC{0}'.format(i+1))
+ax.set_ylabel('PC{0}'.format(j+1))
+ax.set_zlabel('PC{0}'.format(z+1))
+
+
+# Output result to screen
+plt.show()
 
     
 
