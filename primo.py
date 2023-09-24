@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from scipy.linalg import svd
 import matplotlib.pyplot as plt
+from scipy.stats import zscore
 
 # Load the Iris csv data using the Pandas library
 filename = 'Data/Data_for_project.csv'
@@ -17,24 +18,22 @@ df = pd.read_csv(filename)
 # Pandas returns a dataframe, (df) which could be used for handling the data.
 # We will however convert the dataframe to numpy arrays for this course as 
 # is also described in the table in the exercise
-attributeNames = df.columns[1:-1]
+attributeNames = df.columns[1:-2].tolist()
 
 # Extract vector y, convert to NumPy array
 raw_data = df.values  
-raw_data=raw_data[:,range(1,11)]
-for i in range(0,raw_data.shape[0]):
-    raw_data[i][4]= 1 if raw_data[i][4]=="Present" else 0.0
+X=raw_data[:,range(1,10)]
+y=raw_data[:,10]
+N=X.shape[0]
+M=X.shape[1]
 
-standard=raw_data.copy();
+for i in range(0,N):
+    X[i][4]= 1.0 if X[i][4]=="Present" else 0.0
+    
+X=X.astype(float)
 
-std= np.zeros(10)
-for i in range(0,10):
-    #print("max: "+str(raw_data[:,i].max()) + " min: "+ str(raw_data[:,i].min()))
-    #plt.figure()
-    #plt.hist(raw_data[:,i]);
-    #plt.show()
-    std[i]=np.std(raw_data[:,i],ddof=1)
-    standard[:,i]=(raw_data[:,i]-np.average(raw_data[:,i]))/std[i]
+    
+standard=zscore(X,ddof=1)
     
 
 U,S,Vh= svd(standard.astype(np.float64),full_matrices=False)
@@ -43,7 +42,7 @@ V=Vh.T
 
 rho=(S*S)/(S*S).sum()
 
-threshold=0.80
+threshold=0.75
 
 plt.figure()
 
@@ -74,7 +73,7 @@ plt.title('Heart Disease Data: PCA')
 #Z = array(Z)
 for c in range(2):
     # select indices belonging to class c:
-    class_mask = raw_data[:,-1]==c
+    class_mask = y==c
     ax.plot3D(Z[class_mask,i], Z[class_mask,j], Z[class_mask,z],'.')
 plt.legend(["Chd=0","Chd=1"])
 ax.set_xlabel('PC{0}'.format(i+1))
@@ -86,8 +85,6 @@ ax.set_zlabel('PC{0}'.format(z+1))
 plt.show()
 
 
-
-N,M = standard.shape
 pcs = [0,1,2]
 legendStrs = ['PC'+str(e+1) for e in pcs]
 c = ['r','g','b']
@@ -104,6 +101,25 @@ plt.grid()
 plt.title('Heart diseases: PCA Component Coefficients')
 plt.show()
 
-    
+
+plt.figure(figsize=(12,6))
+plt.title('Heart Disease Data: Boxplot (standarized)')
+plt.boxplot(standard)
+plt.xticks(range(1,M+1), attributeNames, rotation=45)
+
+
+# Next, we plot histograms of all attributes.
+plt.figure(figsize=(14,9))
+u = np.floor(np.sqrt(M))
+v = np.ceil(float(M)/u)
+for i in range(M):
+    plt.subplot(int(u),int(v),i+1)
+    plt.hist(X[:,i])
+    plt.xlabel(attributeNames[i])
+    plt.ylim(0, N) # Make the y-axes equal for improved readability
+    if i%v!=0: plt.yticks([])
+    if i==0: plt.title('Heart Disease: Histograms')
+
+
 
     
