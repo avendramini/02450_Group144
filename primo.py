@@ -106,7 +106,7 @@ plt.figure(figsize=(12,6))
 plt.title('Heart Disease Data: Boxplot (standarized)')
 plt.boxplot(standard)
 plt.xticks(range(1,M+1), attributeNames, rotation=45)
-
+plt.show()
 
 # Next, we plot histograms of all attributes.
 plt.figure(figsize=(14,9))
@@ -120,6 +120,6 @@ for i in range(M):
     if i%v!=0: plt.yticks([])
     if i==0: plt.title('Heart Disease: Histograms')
 
-
+plt.show()
 
     
