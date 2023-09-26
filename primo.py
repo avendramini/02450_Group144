@@ -85,10 +85,10 @@ ax.set_zlabel('PC{0}'.format(z+1))
 plt.show()
 
 
-pcs = [0,1,2]
+pcs = [0,1,2,3,4]
 legendStrs = ['PC'+str(e+1) for e in pcs]
 c = ['r','g','b']
-bw = .2
+bw = .1
 r = np.arange(1,M+1)
 plt.figure(figsize=(10,5))
 for i in pcs:    
