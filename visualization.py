@@ -30,12 +30,17 @@ mean = [0 for i in range(len(raw_data[0]))]
 std = [0 for i in range(len(raw_data[0]))]
 median = [0 for i in range(len(raw_data[0]))]
 rang = [0 for i in range(len(raw_data[0]))]
+min = [0 for i in range(len(raw_data[0]))]
+max = [0 for i in range(len(raw_data[0]))]
 
 for i in range(len(X[0])):
     mean[i] = X[:, i].mean()
     std[i] = X[:, i].std(ddof=1)
     median[i] = np.median(X[:, i])
     rang[i] = X[:, i].max()-X[:, i].min()
+    min[i] = X[:, i].min()
+    max[i] = X[:, i].max()
+    print("Name: {}, Min: {} Max: {}".format(attributeNames[i], round(min[i],2), round(max[i],2)))
     print("Mean: {}, std: {}, median: {}, range: {} for {}".format(round(mean[i],2), round(std[i],2), round(median[i],2), round(rang[i],2), attributeNames[i]))
 
 dataframe = pd.DataFrame(standard,
@@ -45,13 +50,14 @@ matrix.style.background_gradient(cmap='coolwarm')
 print(matrix.to_string())
 
 sns.heatmap(matrix, annot=True, fmt=".2f")
+plt.title("Correlation matrix")
 plt.show()
 
 
 plt.figure(figsize=(14,9))
+
 u = np.floor(np.sqrt(M))
 v = np.ceil(float(M)/u)
-plt.title('Heart Disease: Histograms')
 plt.style.use('seaborn-whitegrid')
 bins = 40
 for col in range(len(X[0])):
@@ -65,4 +71,5 @@ for col in range(len(X[0])):
     plt.plot(x, p * len(X) * (xmax - xmin) / bins, 'k', linewidth=2)
     plt.xlabel(attributeNames[col])
     plt.ylabel('Occurrence')
+plt.suptitle('Histogram of attributes with normal distribution')
 plt.show()
