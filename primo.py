@@ -85,10 +85,10 @@ ax.set_zlabel('PC{0}'.format(z+1))
 plt.show()
 
 
-pcs = [0,1,2]
+pcs = [0,1,2,3,4]
 legendStrs = ['PC'+str(e+1) for e in pcs]
 c = ['r','g','b']
-bw = .2
+bw = .1
 r = np.arange(1,M+1)
 plt.figure(figsize=(10,5))
 for i in pcs:    
@@ -103,13 +103,14 @@ plt.show()
 
 
 plt.figure(figsize=(12,6))
-plt.title('Heart Disease Data: Boxplot (standarized)')
+plt.title('Heart Disease Data: Boxplot (standardized)')
 plt.boxplot(standard)
 plt.xticks(range(1,M+1), attributeNames, rotation=45)
 plt.show()
 
 # Next, we plot histograms of all attributes.
 plt.figure(figsize=(14,9))
+plt.subplots_adjust(hspace=0.5)
 u = np.floor(np.sqrt(M))
 v = np.ceil(float(M)/u)
 for i in range(M):
@@ -118,8 +119,38 @@ for i in range(M):
     plt.xlabel(attributeNames[i])
     plt.ylim(0, N) # Make the y-axes equal for improved readability
     if i%v!=0: plt.yticks([])
-    if i==0: plt.title('Heart Disease: Histograms')
+    if i==1: plt.title('Heart Disease: Histograms')
 
+"""plt.show()
+
+plt.hist(X[:,1])
+plt.xlabel(attributeNames[1])
+plt.title('Tobacco Histogram')
+plt.show()"""
+
+plt.figure(figsize=(30,30))
+plt.subplots_adjust(hspace=0.5)
+u = 5
+v = 5
+for i in range(5):
+    for j in range(5):
+        if(j>i):
+            break
+        plt.subplot(u,v,i*5+j+1)
+        if(j==0):
+            plt.ylabel(f"PC {i+1}",fontsize=40)
+        if(i==4):
+            plt.xlabel(f"PC {j+1}",fontsize=40)
+        for c in range(2):
+            # select indices belonging to class c:
+            class_mask = y==c
+            plt.plot(Z[class_mask,i],Z[class_mask,j],'.')
+            
 plt.show()
-
+"""
+plt.figure()
+plt.plot(X[:,3],X[:,6],'.')
+plt.xlabel(attributeNames[3])
+plt.ylabel(attributeNames[6])
+plt.show()"""
     
