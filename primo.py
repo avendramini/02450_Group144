@@ -103,13 +103,14 @@ plt.show()
 
 
 plt.figure(figsize=(12,6))
-plt.title('Heart Disease Data: Boxplot (standarized)')
+plt.title('Heart Disease Data: Boxplot (standardized)')
 plt.boxplot(standard)
 plt.xticks(range(1,M+1), attributeNames, rotation=45)
 plt.show()
 
 # Next, we plot histograms of all attributes.
 plt.figure(figsize=(14,9))
+plt.subplots_adjust(hspace=0.5)
 u = np.floor(np.sqrt(M))
 v = np.ceil(float(M)/u)
 for i in range(M):
@@ -118,8 +119,28 @@ for i in range(M):
     plt.xlabel(attributeNames[i])
     plt.ylim(0, N) # Make the y-axes equal for improved readability
     if i%v!=0: plt.yticks([])
-    if i==0: plt.title('Heart Disease: Histograms')
+    if i==1: plt.title('Heart Disease: Histograms')
 
+"""plt.show()
+
+plt.hist(X[:,1])
+plt.xlabel(attributeNames[1])
+plt.title('Tobacco Histogram')
+plt.show()"""
+
+plt.figure(figsize=(14,9))
+plt.subplots_adjust(hspace=0.5)
+u = 8
+v = 8
+for i in range(8):
+    for j in range(8):
+        plt.subplot(u,v,i*8+j+1)
+        plt.plot(Z[:,i],Z[:,j],'.')
 plt.show()
-
+"""
+plt.figure()
+plt.plot(X[:,3],X[:,6],'.')
+plt.xlabel(attributeNames[3])
+plt.ylabel(attributeNames[6])
+plt.show()"""
     
