@@ -128,14 +128,24 @@ plt.xlabel(attributeNames[1])
 plt.title('Tobacco Histogram')
 plt.show()"""
 
-plt.figure(figsize=(14,9))
+plt.figure(figsize=(30,30))
 plt.subplots_adjust(hspace=0.5)
-u = 8
-v = 8
-for i in range(8):
-    for j in range(8):
-        plt.subplot(u,v,i*8+j+1)
-        plt.plot(Z[:,i],Z[:,j],'.')
+u = 5
+v = 5
+for i in range(5):
+    for j in range(5):
+        if(j>i):
+            break
+        plt.subplot(u,v,i*5+j+1)
+        if(j==0):
+            plt.ylabel(f"PC {i+1}",fontsize=40)
+        if(i==4):
+            plt.xlabel(f"PC {j+1}",fontsize=40)
+        for c in range(2):
+            # select indices belonging to class c:
+            class_mask = y==c
+            plt.plot(Z[class_mask,i],Z[class_mask,j],'.')
+            
 plt.show()
 """
 plt.figure()
