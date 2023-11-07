@@ -178,7 +178,7 @@ K = 10
 CV = model_selection.KFold(n_splits=K, shuffle=True)
 
 lambdas = np.power(10., range(-5, 9))
-hs=np.array([5])
+hs=np.array([5,10,15,20])
 # Initialize variables
 #T = len(lambdas)
 Error_train = np.empty((K, 1))
@@ -251,7 +251,7 @@ for train_index, test_index in CV.split(X, y):
                                                        X=X_train2,
                                                        y=y_train2,
                                                        n_replicates=1,
-                                                       max_iter=10000)
+                                                       max_iter=1000)
     y_test_est = net(X_test2)
     se = (y_test_est.float()-y_test2.float())**2  # squared error
     mse = (sum(se).type(torch.float)/len(y_test2)).data.numpy()  # mean

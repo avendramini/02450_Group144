@@ -79,7 +79,7 @@ for train_index, test_index in CV.split(X,y):
         # Evaluate training and test performance
         train_error[f,l] = np.power(y_train-X_train @ w[:,f,l].T,2).mean(axis=0)
         test_error[f,l] = np.power(y_test-X_test @ w[:,f,l].T,2).mean(axis=0)
-
+    
     f=f+1
 
 opt_val_err = np.min(np.mean(test_error,axis=0))
@@ -97,6 +97,26 @@ print(f"Minimal error:{min_error}")
 print(f"Weights with chosen lambda: {weights_lambda}")
 
 print(f"Optimal lambda:{opt_lambda}")
+
+figure(K-1, figsize=(12,8))
+subplot(1,2,1)
+semilogx(lambdas,mean_w_vs_lambda.T[:,1:],'.-') # Don't plot the bias term
+xlabel('Regularization factor')
+ylabel('Mean Coefficient Values')
+grid()
+# You can choose to display the legend, but it's omitted for a cleaner 
+# plot, since there are many attributes
+#legend(attributeNames[1:], loc='best')
+
+subplot(1,2,2)
+title('Optimal lambda: 1e{0}'.format(np.log10(opt_lambda)))
+loglog(lambdas,train_err_vs_lambda.T,'b.-',lambdas,test_err_vs_lambda.T,'r.-')
+xlabel('Regularization factor')
+ylabel('Squared error (crossvalidation)')
+legend(['Train error','Validation error'])
+grid()
+        
+        
 """print(f"Optimal value error: {opt_val_err}")
 print(f" Average Train error on lambdas: {train_err_vs_lambda}")
 print(f"Average Test error on Lambdas: {test_err_vs_lambda}")
