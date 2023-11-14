@@ -131,7 +131,22 @@ def rlr2_validate(X, y, lambdas, hs, cvf=10):
     ANN_opt_h = hs[np.argmin(np.mean(ANN_test_error, axis=0))]
     ANN_train_err_vs_h = np.mean(ANN_train_error, axis=0)
     ANN_test_err_vs_h = np.mean(ANN_test_error, axis=0)
-
+    
+    plt.figure(figsize=(8,6))
+    plt.plot(hs,ANN_test_err_vs_h,label="ANN Test Error")
+    plt.plot(hs,ANN_train_err_vs_h,label="ANN Train Error")
+    plt.xlabel("Regularization factor (Hidden units)")
+    plt.ylabel("Squared Error (crossvalidation)")
+    plt.legend()
+    plt.show()
+    
+    plt.figure(figsize=(8,6))
+    plt.loglog(lambdas,LR_train_err_vs_lambda,'b.-',lambdas,LR_test_err_vs_lambda,'r.-')
+    plt.xlabel('Regularization factor (Lambda)')
+    plt.ylabel('Squared error (crossvalidation)')
+    plt.legend(['Train error','Validation error'])
+    plt.show()
+    
     BL_opt_val_err = np.min(BL_test_error)
     BL_opt_mean=BL_means[np.argmin(np.min(BL_test_error))]
 
@@ -145,7 +160,7 @@ df = pd.read_csv(filename)
 # Pandas returns a dataframe, (df) which could be used for handling the data.
 # We will however convert the dataframe to numpy arrays for this course as
 # is also described in the table in the exercise
-attributeNames = df.columns[1:-2].tolist()
+attributeNames = np.array(df.columns[:].tolist())
 
 # Extract vector y, convert to NumPy array
 raw_data = df.values
@@ -158,6 +173,9 @@ colonne_da_mantenere = [i for i in range(
 
 X = raw_data[:, colonne_da_mantenere]
 X[:, 0] = 1
+yAttributeName=attributeNames[colonna_da_escludere]
+attributeNames=attributeNames[colonne_da_mantenere]
+attributeNames[0]='bias'
 y = raw_data[:, [colonna_da_escludere]].squeeze()
 y = y.astype(float)
 
@@ -178,8 +196,8 @@ K = 10
 CV = model_selection.KFold(n_splits=K, shuffle=True)
 
 lambdas = np.power(10., range(-5, 9))
-#hs=np.array([1,2,3,4,5])
-hs=np.array([10])
+hs=np.array([1,5,10,20,25,30,50])
+#hs=np.array([10])
 # Initialize variables
 #T = len(lambdas)
 Error_train = np.empty((K, 1))
@@ -203,6 +221,9 @@ CI_ANNvsLR=np.empty(K,dtype=object)
 p_BLvsLR=np.empty((K,1))
 p_BLvsANN=np.empty((K,1))
 p_ANNvsLR=np.empty((K,1))
+zBL_LR=np.empty(0)
+zBL_ANN=np.empty(0)
+zANN_LR=np.empty(0)
 
 k = 0
 for train_index, test_index in CV.split(X, y):
@@ -212,7 +233,7 @@ for train_index, test_index in CV.split(X, y):
     y_train = y[train_index]
     X_test = X[test_index]
     y_test = y[test_index]
-    internal_cross_validation = 5
+    internal_cross_validation = 10
     # CHANGE TO EVALUATE ALL 3 MODELS
     LR_opt_val_err, GLR_opt_lambda[k], LR_mean_w_vs_lambda, LR_train_err_vs_lambda, LR_test_err_vs_lambda, ANN_opt_val_err, ANN_opt_h, ANN_train_err_vs_h, ANN_test_err_vs_h,BL_opt_val_err,BL_opt_mean,BL_train_error,BL_test_error = rlr2_validate(
         X_train, y_train, lambdas,hs, internal_cross_validation)
@@ -285,33 +306,52 @@ for train_index, test_index in CV.split(X, y):
     zLR=np.abs(y_test-LR_y_test_est)**2
     zANN=se.detach().numpy().squeeze()
     
-    alpha = 0.05
-    CIBL = st.t.interval(1-alpha, df=len(zBL)-1, loc=np.mean(zBL), scale=st.sem(zBL))# Confidence interval    
-    CILR = st.t.interval(1-alpha, df=len(zLR)-1, loc=np.mean(zLR), scale=st.sem(zLR))
-    CIANN = st.t.interval(1-alpha, df=len(zANN)-1, loc=np.mean(zANN), scale=st.sem(zANN))
+    #alpha = 0.05
+    #CIBL = st.t.interval(1-alpha, df=len(zBL)-1, loc=np.mean(zBL), scale=st.sem(zBL))# Confidence interval    
+    #CILR = st.t.interval(1-alpha, df=len(zLR)-1, loc=np.mean(zLR), scale=st.sem(zLR))
+    #CIANN = st.t.interval(1-alpha, df=len(zANN)-1, loc=np.mean(zANN), scale=st.sem(zANN))
     
     #BL VS LR
-    z = zBL - zLR
-    CI_BLvsLR[k] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
-    p_BLvsLR[k] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    #z = zBL - zLR
+    zBL_LR=np.concatenate((zBL_LR, zBL-zLR))
+    #CI_BLvsLR[k] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    #p_BLvsLR[k] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
     
     #BL VS ANN
-    z = zBL - zANN
-    CI_BLvsANN[k] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
-    p_BLvsANN[k] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    #z = zBL - zANN
+    zBL_ANN=np.concatenate((zBL_ANN, zBL-zANN))
+    #CI_BLvsANN[k] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    #p_BLvsANN[k] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
     
     #ANN VS LR
-    z = zANN - zLR
-    CI_ANNvsLR[k] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
-    p_ANNvsLR[k] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    #z = zANN - zLR
+    zANN_LR=np.concatenate((zANN_LR, zANN-zLR))
+    #CI_ANNvsLR[k] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    #p_ANNvsLR[k] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
     
     
     
     k += 1
+
+alpha=0.05
+z=zBL_LR
+CI_BL_R = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+p_BL_LR = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+
+z=zBL_ANN
+CI_BL_ANN = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+p_BL_ANN = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    
+z=zANN_LR
+CI_ANN_LR = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+p_ANN_LR = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    
     
 for k in range(0,K):
-    print(f"FOLD: {k+1} h: {GANN_opt_h[k]} E_ann: {GANN_test_err[k]} lambda: {GLR_opt_lambda[k]} E_lr: {GLR_test_err[k]}")
-plt.show()
+    #print(f"FOLD: {k+1} h: {GANN_opt_h[k]} E_ann: {GANN_test_err[k]} lambda: {GLR_opt_lambda[k]} E_lr: {GLR_test_err[k]} E_bl:{GBL_test_err[k]}")
+    print(f"{k+1} & {np.round(GANN_opt_h[k],2)} & {np.round(GANN_test_err[k,0],2)} & {np.round(GLR_opt_lambda[k],2)} & {np.round(GLR_test_err[k,0],2)} & {np.round(GBL_test_err[k,0],2)}\\\\")
+    print("\\hline")
+plt.figure(figsize=(12,8))
 plt.xlabel("Fold")
 plt.ylabel("MSE")
 plt.plot(range(0,K),GANN_train_err,label="ANN Train error")
@@ -324,3 +364,12 @@ plt.plot(range(0,K),GBL_train_err,label="BL Train error")
 plt.plot(range(0,K),GBL_test_err,label="BL Test error")
 plt.legend()
 plt.show()
+
+print( CI_BL_R)
+print(p_BL_LR)
+print()
+print(CI_BL_ANN)
+print(p_BL_ANN)
+print()
+print(CI_ANN_LR)
+print(p_ANN_LR)

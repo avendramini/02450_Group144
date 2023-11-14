@@ -19,7 +19,8 @@ df = pd.read_csv(filename)
 # Pandas returns a dataframe, (df) which could be used for handling the data.
 # We will however convert the dataframe to numpy arrays for this course as 
 # is also described in the table in the exercise
-attributeNames = df.columns[1:-2].tolist()
+attributeNames = np.array(df.columns[:].tolist())
+
 
 # Extract vector y, convert to NumPy array
 raw_data = df.values  
@@ -30,6 +31,9 @@ colonna_da_escludere = 9
 colonne_da_mantenere = [i for i in range(raw_data.shape[1]) if i != colonna_da_escludere]
 
 X=raw_data[:,colonne_da_mantenere]
+yAttributeName=attributeNames[colonna_da_escludere]
+attributeNames=attributeNames[colonne_da_mantenere]
+attributeNames[0]='bias'
 X[:,0]=1
 y=raw_data[:,colonna_da_escludere]
 y=y.astype(float)
@@ -98,7 +102,7 @@ print(f"Weights with chosen lambda: {weights_lambda}")
 
 print(f"Optimal lambda:{opt_lambda}")
 
-figure(K-1, figsize=(12,8))
+figure(K-1, figsize=(15,8))
 subplot(1,2,1)
 semilogx(lambdas,mean_w_vs_lambda.T[:,1:],'.-') # Don't plot the bias term
 xlabel('Regularization factor')
@@ -116,20 +120,21 @@ ylabel('Squared error (crossvalidation)')
 legend(['Train error','Validation error'])
 grid()
         
+ 
         
+print(weights_lambda)
+colori = ['blue', 'green', 'red', 'purple']
+plt.figure(figsize=(10,5))    
+plt.bar(attributeNames, weights_lambda,color=colori)
+plt.xlabel('Attributes')
+plt.ylabel('Component coefficients')
+plt.grid()
+plt.title('Linear Regression Weights')
+plt.show()
+
 """print(f"Optimal value error: {opt_val_err}")
 print(f" Average Train error on lambdas: {train_err_vs_lambda}")
 print(f"Average Test error on Lambdas: {test_err_vs_lambda}")
 print(f"Average weight based on Lambda: {mean_w_vs_lambda}")"""
 
 
-
-
-"""#classification baseline
-baseline_chd1=np.sum(y)
-baseline_chd0=N-baseline_chd1
-baseline_class=1
-if baseline_chd1<baseline_chd0:
-    baseline_class=0
-    
-print(baseline_class)"""
