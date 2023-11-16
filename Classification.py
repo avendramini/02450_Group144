@@ -666,32 +666,5 @@ for par_index, test_index in CV1.split(X):
     CI_ANNvsLR[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
     p_ANNvsLR[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
 
-print(w_rlr)
-colori = ['blue', 'green', 'red', 'purple']
-plt.figure(figsize=(10,5))
-plt.bar(attributeNames, w_rlr,color=colori)
-plt.xlabel('Attributes')
-plt.ylabel('Component coefficients')
-plt.grid()
-plt.title('Linear Regression Weights')
-plt.show()
-
-for k in range(0,K):
-    #print(f"FOLD: {k+1} h: {GANN_opt_h[k]} E_ann: {GANN_test_err[k]} lambda: {GLR_opt_lambda[k]} E_lr: {GLR_test_err[k]} E_bl:{GBL_test_err[k]}")
-    print(f"{k+1} & {np.round(GANN_opt_h[k],2)} & {np.round(GANN_test_err[k,0],2)} & {np.round(GLR_opt_lambda[k],2)} & {np.round(GLR_test_err[k,0],2)} & {np.round(GBL_test_err[k,0],2)}\\\\")
-    print("\\hline")
-plt.figure(figsize=(12,8))
-plt.xlabel("Fold")
-plt.ylabel("MSE")
-plt.plot(range(0,K),GANN_train_err,label="ANN Train error")
-plt.plot(range(0,K),GANN_test_err,label="ANN Test error")
-
-plt.plot(range(0,K),GLR_train_err,label="LR Train error")
-plt.plot(range(0,K),GLR_test_err,label="LR Test error")
-
-plt.plot(range(0,K),GBL_train_err,label="BL Train error")
-plt.plot(range(0,K),GBL_test_err,label="BL Test error")
-plt.legend()
-plt.show()
 
 
