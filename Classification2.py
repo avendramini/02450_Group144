@@ -33,7 +33,7 @@ X = X.astype(float)
 y = y.astype(float)
 X = stats.zscore(X)
 log_model_with_reg = LogisticRegression(penalty='l2', C=1 / 10.0, solver='lbfgs',
-                                        fit_intercept=True)  # remember to select the most-commonly found optimal lambda value
+                                        fit_intercept=True)
 log_model_no_reg = LogisticRegression(solver='lbfgs', fit_intercept=True)
 
 log_model_with_reg = log_model_with_reg.fit(X, y)

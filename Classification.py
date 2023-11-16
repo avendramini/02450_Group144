@@ -535,7 +535,7 @@ def rlr2_validate(X, y, hs, cvf=10):  # Modify to include lambda for logistic re
     print("Optimal number of hidden layers:" + str(ANN_opt_h))
     print("Train error vs hidden layer:" + str(ANN_train_err_vs_h))
     print("Test error vs hidden layer:" + str(ANN_test_err_vs_h))
-    return e, ANN_opt_val_err, ANN_opt_h, ANN_train_err_vs_h, ANN_test_err_vs_h
+    return y_sigmoid, ANN_opt_val_err, ANN_opt_h, ANN_train_err_vs_h, ANN_test_err_vs_h
 
 
 k1 = 0
@@ -611,60 +611,60 @@ for par_index, test_index in CV1.split(X):
 
     # ANN
     hs = [1,5,10,15,20,25]
-    e, ANN_opt_val_err, ANN_opt_h, ANN_train_err_vs_h, ANN_test_err_vs_h = rlr2_validate(X_train, y_train, hs,
+    y_train_est, ANN_opt_val_err, ANN_opt_h, ANN_train_err_vs_h, ANN_test_err_vs_h = rlr2_validate(X_train, y_train, hs,
                                                                                          cvf=10)
     ann_test_error[k1] = ANN_test_err_vs_h
-    print('Error rate - baseline log-reg - CV1 fold {0}/{1}: {2}%'.format(k1 + 1, K1,
+    print('Error rate - ANN - CV1 fold {0}/{1}: {2}%'.format(k1 + 1, K1,
                                                                           np.round(100 * ann_test_error[k1],decimals=2)))
     print('Optimal hidden layers: {0}'.format(ANN_opt_h))
     print()
     print()
     print()
-    e = np.array(e)
-    ANN_opt_val_err = np.array(ANN_opt_val_err)
-    ANN_opt_h = np.array(ANN_opt_h)
-    ANN_train_err_vs_h = np.array(ANN_train_err_vs_h)
-    ANN_test_err_vs_h = np.array(ANN_test_err_vs_h)
-    se = (ANN_test_err_vs_h) ** 2  # squared error
-    mse = (sum(se).type(torch.float) / len(y_test)).data.numpy()  # mean
-    GANN_test_err[k1] = mse[0]
-
-    y_train_est = net(X_train)
-    train_se = (y_train_est.float() - y_train.float()
-                ) ** 2  # squared error
-    train_mse = (sum(train_se).type(torch.float) /
-                 len(y_train)).data.numpy()  # mean
-    # store error rate for current CV fold
-    GANN_train_err[k1] = train_mse[0]
-
-    GANN_opt_h[k1] = ANN_opt_h
-
-    zBL=np.abs(y_test - BL_y_test_est) ** 2
-    zLR=np.abs(y_test-LR_y_test_est)**2
-    zANN=se.detach().numpy().squeeze()
-
-    alpha = 0.05
-    CIBL = st.t.interval(1-alpha, df=len(zBL)-1, loc=np.mean(zBL), scale=st.sem(zBL))# Confidence interval
-    CILR = st.t.interval(1-alpha, df=len(zLR)-1, loc=np.mean(zLR), scale=st.sem(zLR))
-    CIANN = st.t.interval(1-alpha, df=len(zANN)-1, loc=np.mean(zANN), scale=st.sem(zANN))
-
-    # BL VS LR
-    z = zBL - zLR
-    zBL_LR = np.concatenate((zBL_LR, zBL - zLR))
-    CI_BLvsLR[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
-    p_BLvsLR[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
-
-    #BL VS ANN
-    z = zBL - zANN
-    zBL_ANN = np.concatenate((zBL_ANN, zBL - zANN))
-    CI_BLvsANN[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
-    p_BLvsANN[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
-
-    #ANN VS LR
-    z = zANN - zLR
-    zANN_LR = np.concatenate((zANN_LR, zANN - zLR))
-    CI_ANNvsLR[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
-    p_ANNvsLR[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    # e = np.array(e)
+    # ANN_opt_val_err = np.array(ANN_opt_val_err)
+    # ANN_opt_h = np.array(ANN_opt_h)
+    # ANN_train_err_vs_h = np.array(ANN_train_err_vs_h)
+    # ANN_test_err_vs_h = np.array(ANN_test_err_vs_h)
+    # se = (ANN_test_err_vs_h) ** 2  # squared error
+    # mse = (sum(se).type(torch.float) / len(y_test)).data.numpy()  # mean
+    # GANN_test_err[k1] = mse[0]
+    #
+    #
+    # train_se = (y_train_est.float() - y_train.float()
+    #             ) ** 2  # squared error
+    # train_mse = (sum(train_se).type(torch.float) /
+    #              len(y_train)).data.numpy()  # mean
+    # # store error rate for current CV fold
+    # GANN_train_err[k1] = train_mse[0]
+    #
+    # GANN_opt_h[k1] = ANN_opt_h
+    #
+    # zBL=np.abs(y_test - BL_y_test_est) ** 2
+    # zLR=np.abs(y_test-LR_y_test_est)**2
+    # zANN=se.detach().numpy().squeeze()
+    #
+    # alpha = 0.05
+    # CIBL = st.t.interval(1-alpha, df=len(zBL)-1, loc=np.mean(zBL), scale=st.sem(zBL))# Confidence interval
+    # CILR = st.t.interval(1-alpha, df=len(zLR)-1, loc=np.mean(zLR), scale=st.sem(zLR))
+    # CIANN = st.t.interval(1-alpha, df=len(zANN)-1, loc=np.mean(zANN), scale=st.sem(zANN))
+    #
+    # # BL VS LR
+    # z = zBL - zLR
+    # zBL_LR = np.concatenate((zBL_LR, zBL - zLR))
+    # CI_BLvsLR[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    # p_BLvsLR[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    #
+    # #BL VS ANN
+    # z = zBL - zANN
+    # zBL_ANN = np.concatenate((zBL_ANN, zBL - zANN))
+    # CI_BLvsANN[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    # p_BLvsANN[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
+    #
+    # #ANN VS LR
+    # z = zANN - zLR
+    # zANN_LR = np.concatenate((zANN_LR, zANN - zLR))
+    # CI_ANNvsLR[k1] = st.t.interval(1-alpha, len(z)-1, loc=np.mean(z), scale=st.sem(z))  # Confidence interval
+    # p_ANNvsLR[k1] = 2*st.t.cdf( -np.abs( np.mean(z) )/st.sem(z), df=len(z)-1)  # p-value
 
 
 
